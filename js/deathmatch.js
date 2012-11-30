@@ -1,5 +1,4 @@
 (function(){
-	Math.seedrandom(12345);
 	function DeathMatch(){
 		this.step = 100;
 		this.delStep = 0;

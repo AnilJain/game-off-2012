@@ -75,6 +75,8 @@
 			else if(this.laneGrid[this.lane][this.currentLaneY+this.dir].val !== this.team){
 				this.fighting = true;
 			}
+		}else{
+			this.fighting = true;
 		}
 		
 		// do fight/walk animations and hit other units
@@ -83,7 +85,11 @@
 				this.playAnimation('walk', 200);
 			}else{
 				if(new Date().getTime() > this.lastHit + this.hitInterval){
-					this.laneGrid[this.lane][this.currentLaneY+this.dir].unit.hit();
+					if(this.laneGrid[this.lane][this.currentLaneY+this.dir]){
+						this.laneGrid[this.lane][this.currentLaneY+this.dir].unit.hit();
+					}else{
+						//must be the castle
+					}
 				}
 				this.playAnimation('fight', 80);
 			}
