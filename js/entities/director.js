@@ -1,7 +1,7 @@
     function Director(laneSel)
     {    
 		this.live = true;
-		this.minSpawnWaitTime = 3000;
+		this.minSpawnWaitTime = 3200;
 		this.lastSpawned = new Date().getTime();
 		
 		this.laneSel = laneSel;
@@ -32,6 +32,6 @@
     {	
 		if(new Date().getTime() > this.lastSpawned + this.minSpawnWaitTime){
 				this.lastSpawned = new Date().getTime();
-				//this.spawnUnit();
+				this.spawnUnit();
 		}	
     }

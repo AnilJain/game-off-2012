@@ -11,6 +11,8 @@
 	DeathMatch.prototype.load = function(){
 		this.resourceManager.add("images/tiles.png", 1, "tiles");
 		this.resourceManager.add("images/selection.png", 1, "selection");
+		this.resourceManager.add("images/footicon.png", 1, "footicon");
+		this.resourceManager.add("images/archicon.png", 1, "archicon");
 		this.resourceManager.add("images/footman.png", 1, "footman");
 		this.resourceManager.add("images/footman-e.png", 1, "footman-e");
 		this.resourceManager.add("images/archer.png", 1, "archer");
@@ -87,11 +89,11 @@
 		// init the AI
 		gameState.director = new Director(gameState.eLaneSel);
 				
-		gameState.footManButton = new Button({width:50, height:50, x : 380, y : 470, resource : this.resourceManager.getResource('graphics'),
+		gameState.footManButton = new Button({width:50, height:50, x : 380, y : 470, resource : this.resourceManager.getResource('footicon'),
 			clicked : function(){
 				// spawn a footmam
 				var state = gameState;
-				if(state.resources > 150){
+				if(state.resources >= 150){
 					state.resourceBar.removePoints(150);
 
 					new Footman({
@@ -107,22 +109,15 @@
 									castle : gameState.eCastle
 					});
 				}
-			},
-			hover : function(over){
-				if(over){
-					this.startY = 50;
-				}else{
-					this.startY = 0;
-				}
-		}});
+			}});
 		
 		gameState.ui.addItem(gameState.footManButton);
 		
-		gameState.ArcherButton = new Button({width:50, height:50, x : 440, y : 470, resource : this.resourceManager.getResource('graphics'),
+		gameState.ArcherButton = new Button({width:50, height:50, x : 440, y : 470, resource : this.resourceManager.getResource('archicon'),
 			clicked : function(){
 				// spawn a Archer
 				var state = gameState;
-				if(gameState.resources > 100){
+				if(gameState.resources >= 100){
 					gameState.resourceBar.removePoints(100);
 					new Archer({
 									x:state.pLaneSel.pos.x, 
@@ -137,14 +132,7 @@
 									castle : gameState.eCastle
 					});
 				}
-			},
-			hover : function(over){
-				if(over){
-					this.startY = 50;
-				}else{
-					this.startY = 0;
-				}
-		}});
+			}});
 		
 		gameState.ui.addItem(gameState.ArcherButton);
 		
@@ -213,6 +201,18 @@
 	DeathMatch.prototype.update = function(){
 		jGame.prototype.update.call(this);
 		//this.gameState.scoreLabel.text = this.gameState.score;
+		
+		if(Game.gameState.resources >= 100){
+			Game.gameState.ArcherButton.startY = 50;
+		}else{
+			Game.gameState.ArcherButton.startY = 0;
+		}
+		
+		if(Game.gameState.resources >= 150){
+			Game.gameState.footManButton.startY = 50;
+		}else{
+			Game.gameState.footManButton.startY = 0;
+		}
 
 	}
 	
