@@ -6,9 +6,9 @@
 		this.height = 32;
 			
 		this.lastChanged = new Date().getTime();
-		this.changeInterval = 800;
+		this.changeInterval = 1200;
 		
-		this.spawnLanes = [88, 130, 172, 214, 256];
+		this.spawnLanes = [88, 172, 256];
 		this.currentLane = 0;
 
 		this.pos.x = this.spawnLanes[this.currentLane];

@@ -18,8 +18,11 @@
 		this.resourceManager.add("images/archer.png", 1, "archer");
 		this.resourceManager.add("images/archer-e.png", 1, "archer-e");
 		this.resourceManager.add("images/gamebg.png", 1, "gamebg");
+		this.resourceManager.add("images/board.png", 1, "board");
 		this.resourceManager.add("images/defeat.png", 1, "defeatbg");
 		this.resourceManager.add("images/victory.png", 1, "victorybg");
+		this.resourceManager.add("images/menu.png", 1, "menubg");
+		this.resourceManager.add("images/start.png", 1, "startbut");
 		this.resourceManager.add("images/lanesel.png", 1, "laneSel");
 		jGame.prototype.load.call(this);
 	}
@@ -44,7 +47,7 @@
 		gameState.resourceBar = new ResourceBar({x : 380, y : 430, height : 30, shape : true, color:{r:0, g:100, b:255}});
 		
 		// main matching board
-		new Board({pos : {x:380, y: 20, z:1}});
+		new Board({pos : {x:380, y: 20, z:1}, resource : this.resourceManager.getResource('board')});
 		
 		// ui for buttons and labels
 		gameState.ui = new UI();
@@ -76,7 +79,7 @@
 		};
 		
 		gameState.laneGrid = [];
-		for(var x = 0; x < 5;x++){
+		for(var x = 0; x < 3;x++){
 			gameState.laneGrid[x] = [];
 			for(var y = 0; y < 18;y++){
 				gameState.laneGrid[x][y] = {
@@ -147,11 +150,15 @@
 		Game.addState("menu");
 		Game.switchState({name : "menu"});
 
-		var menuState = {};
+		var menuState = {},
+			menuBg = new Background({'resource' : this.resourceManager.getResource('menubg'), 'bgIndex' : 0}),
+			parralaxBackground = new ParralaxBackground();
+		
+		parralaxBackground.addBackground({'background' : menuBg, 'speedMultX' : 0, 'speedMultY' : 0});
 		
 		menuState.ui = new UI();
 		
-		menuState.startButton = new Button({width:158, height:60, x : Game.width/2-146/2, y : 270, resource : this.resourceManager.getResource('graphics'),
+		menuState.startButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 320, resource : this.resourceManager.getResource('startbut'),
 			clicked : function(){
 				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
 			},
@@ -175,11 +182,6 @@
 			defeatBg = new Background({'resource' : this.resourceManager.getResource('defeatbg'), 'bgIndex' : 0}),
 			parralaxBackground = new ParralaxBackground();
 			parralaxBackground.addBackground({'background' : defeatBg, 'speedMultX' : 0, 'speedMultY' : 0});
-		
-		defeatState.ui = new UI();
-		defeatState.defeatedLabel = new Label({text:'You have been defeated!', x:120,y:280,z:1, 'font':'34pt MedievalSharp'});
-		
-		defeatState.ui.addItem(defeatState.defeatedLabel, 100);	
 	}
 	
 	// Defeat state
@@ -191,11 +193,6 @@
 			victoryBg = new Background({'resource' : this.resourceManager.getResource('victorybg'), 'bgIndex' : 0}),
 			parralaxBackground = new ParralaxBackground();
 			parralaxBackground.addBackground({'background' : victoryBg, 'speedMultX' : 0, 'speedMultY' : 0});
-		
-		victoryState.ui = new UI();
-		victoryState.victoryLabel = new Label({text:'You are victorious!', x:180,y:280,z:1, 'font':'34pt MedievalSharp'});
-		
-		victoryState.ui.addItem(victoryState.victoryLabel, 100);	
 	}
 	
 	DeathMatch.prototype.update = function(){

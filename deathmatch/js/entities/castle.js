@@ -4,6 +4,7 @@
 		this.live = true;
 		this.label = label;
 		this.team = team;
+		this.end = false;
 		Game.addEntity(this, true);
     }
     
@@ -18,7 +19,8 @@
     {	
 		this.label.text = this.health.toFixed(2) + "%";
 		
-		if(this.health <= 0){
+		if(this.health <= 0 && !this.end){
+			this.end = true;
 			if(this.team ===1){
 				Game.switchState({name : "defeat", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
 			}else{
