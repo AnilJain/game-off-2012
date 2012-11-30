@@ -5,7 +5,7 @@ function Board(options){
 		this.tiles = [];
 		this.width = 400;
 		this.height = 400;
-		this.color = "grey";
+
 		this.pos = options.pos;//{x : 380, y : 20, z:0};
 		
 		this.clickable = true;
