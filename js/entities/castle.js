@@ -1,8 +1,9 @@
-    function Castle(label)
+    function Castle(label, team)
     {    
 		this.health = 100;
 		this.live = true;
 		this.label = label;
+		this.team = team;
 		Game.addEntity(this, true);
     }
     
@@ -16,4 +17,12 @@
     Castle.prototype.update = function(deltaTime)
     {	
 		this.label.text = this.health.toFixed(2) + "%";
+		
+		if(this.health <= 0){
+			if(this.team ===1){
+				Game.switchState({name : "defeat", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			}else{
+				Game.switchState({name : "victory", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			}
+		}
     }

@@ -16,6 +16,8 @@
 		this.resourceManager.add("images/archer.png", 1, "archer");
 		this.resourceManager.add("images/archer-e.png", 1, "archer-e");
 		this.resourceManager.add("images/gamebg.png", 1, "gamebg");
+		this.resourceManager.add("images/defeat.png", 1, "defeatbg");
+		this.resourceManager.add("images/victory.png", 1, "victorybg");
 		this.resourceManager.add("images/lanesel.png", 1, "laneSel");
 		jGame.prototype.load.call(this);
 	}
@@ -50,11 +52,11 @@
 		
 		gameState.eCastleHealthLabel = new Label({'text':'Test', x:160,y:40,z:1, 'font':'14pt MedievalSharp'});
 		gameState.ui.addItem(gameState.eCastleHealthLabel, 100);	
-		gameState.eCastle = new Castle(gameState.eCastleHealthLabel);
+		gameState.eCastle = new Castle(gameState.eCastleHealthLabel, 2);
 		
 		gameState.pCastleHealthLabel = new Label({'text':'Test', x:160,y:575,z:1, 'font':'14pt MedievalSharp'});
 		gameState.ui.addItem(gameState.pCastleHealthLabel, 100);	
-		gameState.pCastle = new Castle(gameState.pCastleHealthLabel);
+		gameState.pCastle = new Castle(gameState.pCastleHealthLabel, 1);
 		
 		gameState.resourceLabel = new Label({'text':' ', x:600,y:453,z:1, 'font':'14pt MedievalSharp'});
 		gameState.ui.addItem(gameState.resourceLabel, 100);	
@@ -146,6 +148,8 @@
 		
 		gameState.ui.addItem(gameState.ArcherButton);
 		
+		this.initDefeat();
+		this.initVictory();
 		this.initMenu();
 		requestAnimFrame(function(){Game.update()});
 	}
@@ -172,6 +176,38 @@
 		}});
 											
 		menuState.ui.addItem(menuState.startButton);
+	}
+	
+	// Defeat state
+	DeathMatch.prototype.initDefeat = function(){
+		Game.addState("defeat");
+		Game.switchState({name : "defeat"});
+
+		var defeatState = {},
+			defeatBg = new Background({'resource' : this.resourceManager.getResource('defeatbg'), 'bgIndex' : 0}),
+			parralaxBackground = new ParralaxBackground();
+			parralaxBackground.addBackground({'background' : defeatBg, 'speedMultX' : 0, 'speedMultY' : 0});
+		
+		defeatState.ui = new UI();
+		defeatState.defeatedLabel = new Label({text:'You have been defeated!', x:120,y:280,z:1, 'font':'34pt MedievalSharp'});
+		
+		defeatState.ui.addItem(defeatState.defeatedLabel, 100);	
+	}
+	
+	// Defeat state
+	DeathMatch.prototype.initVictory = function(){
+		Game.addState("victory");
+		Game.switchState({name : "victory"});
+
+		var victoryState = {},
+			victoryBg = new Background({'resource' : this.resourceManager.getResource('victorybg'), 'bgIndex' : 0}),
+			parralaxBackground = new ParralaxBackground();
+			parralaxBackground.addBackground({'background' : victoryBg, 'speedMultX' : 0, 'speedMultY' : 0});
+		
+		victoryState.ui = new UI();
+		victoryState.victoryLabel = new Label({text:'You are victorious!', x:180,y:280,z:1, 'font':'34pt MedievalSharp'});
+		
+		victoryState.ui.addItem(victoryState.victoryLabel, 100);	
 	}
 	
 	DeathMatch.prototype.update = function(){

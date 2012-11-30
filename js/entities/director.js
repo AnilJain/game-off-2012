@@ -32,6 +32,6 @@
     {	
 		if(new Date().getTime() > this.lastSpawned + this.minSpawnWaitTime){
 				this.lastSpawned = new Date().getTime();
-				this.spawnUnit();
+				//this.spawnUnit();
 		}	
     }
