@@ -13,7 +13,6 @@
 		
 		this.addAnimation([0,1,2,1], "walk");
 		this.addAnimation([1,3,4,3], "fight");
-		//this.playAnimation('walk', 200, 1);
 		
 		this.fighting = false;
 		this.team = options.team;
@@ -21,6 +20,7 @@
 		this.lane = options.lane;
 		this.laneData = options.laneData;
 		this.laneGrid = options.laneGrid;
+		this.castle = options.castle;
 		
 		this.lastHit = new Date().getTime();
 		this.hitInterval = 80;
@@ -65,7 +65,9 @@
 		}
 
 		// if something is in front then stop moving
-		if(this.laneGrid[this.lane][this.currentLaneY+this.dir] !== undefined){
+		// quick and dirty...
+		if(this.currentLaneY+this.dir < Game.gameState.laneGrid[0].length-1 && this.currentLaneY+this.dir > 0){
+		//if(this.laneGrid[this.lane][this.currentLaneY+this.dir] !== undefined){
 			if(this.laneGrid[this.lane][this.currentLaneY+this.dir].val === 0){
 				this.fighting = false;
 				
@@ -85,10 +87,11 @@
 				this.playAnimation('walk', 200);
 			}else{
 				if(new Date().getTime() > this.lastHit + this.hitInterval){
-					if(this.laneGrid[this.lane][this.currentLaneY+this.dir]){
+					
+					if(this.laneGrid[this.lane][this.currentLaneY+this.dir].unit){
 						this.laneGrid[this.lane][this.currentLaneY+this.dir].unit.hit();
 					}else{
-						//must be the castle
+						this.castle.hit(0.2);
 					}
 				}
 				this.playAnimation('fight', 80);

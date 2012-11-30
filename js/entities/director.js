@@ -1,7 +1,7 @@
     function Director(laneSel)
     {    
 		this.live = true;
-		this.minSpawnWaitTime = 1500;
+		this.minSpawnWaitTime = 3000;
 		this.lastSpawned = new Date().getTime();
 		
 		this.laneSel = laneSel;
@@ -23,7 +23,8 @@
 					team : 2,
 					lane : this.laneSel.currentLane,
 					laneData : Game.gameState.laneData,
-					laneGrid : Game.gameState.laneGrid
+					laneGrid : Game.gameState.laneGrid,
+					castle : Game.gameState.pCastle
 		});
 	}
 	
@@ -31,6 +32,6 @@
     {	
 		if(new Date().getTime() > this.lastSpawned + this.minSpawnWaitTime){
 				this.lastSpawned = new Date().getTime();
-			//	this.spawnUnit();
+				this.spawnUnit();
 		}	
     }

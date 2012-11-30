@@ -48,26 +48,33 @@
 		//gameState.scoreLabel = new Label({'text':'Test', x:0,y:30,z:1, 'font':'14pt MedievalSharp'});
 		//gameState.ui.addItem(gameState.scoreLabel, 100);	
 		
+		gameState.eCastleHealthLabel = new Label({'text':'Test', x:160,y:40,z:1, 'font':'14pt MedievalSharp'});
+		gameState.ui.addItem(gameState.eCastleHealthLabel, 100);	
+		gameState.eCastle = new Castle(gameState.eCastleHealthLabel);
+		
+		gameState.pCastleHealthLabel = new Label({'text':'Test', x:160,y:575,z:1, 'font':'14pt MedievalSharp'});
+		gameState.ui.addItem(gameState.pCastleHealthLabel, 100);	
+		gameState.pCastle = new Castle(gameState.pCastleHealthLabel);
+		
 		gameState.resourceLabel = new Label({'text':' ', x:600,y:453,z:1, 'font':'14pt MedievalSharp'});
 		gameState.ui.addItem(gameState.resourceLabel, 100);	
 		gameState.resourceBar.label = gameState.resourceLabel;
 		
 		// spawn selector for lane switching
 		gameState.pLaneSel = new LaneSelector({pos:{y:480}, resource : Game.resourceManager.getResource("laneSel")});
-		gameState.eLaneSel = new LaneSelector({pos:{y:96}, resource : Game.resourceManager.getResource("laneSel")});
-		
+		gameState.eLaneSel = new LaneSelector({pos:{y:82}, resource : Game.resourceManager.getResource("laneSel")});
 		
 		// init the lane data and grid
 		gameState.laneData = {
 			size : 16,
-			startY:96,
+			startY:82,
 			endY:480			
 		};
 		
 		gameState.laneGrid = [];
 		for(var x = 0; x < 5;x++){
 			gameState.laneGrid[x] = [];
-			for(var y = 0; y < 24;y++){
+			for(var y = 0; y < 26;y++){
 				gameState.laneGrid[x][y] = {
 					val : 0,
 					unit : false
@@ -94,7 +101,8 @@
 									team : 1,
 									lane : state.pLaneSel.currentLane,
 									laneData : state.laneData,
-									laneGrid : state.laneGrid
+									laneGrid : state.laneGrid,
+									castle : gameState.eCastle
 					});
 				}
 			},
@@ -123,7 +131,8 @@
 									team : 1,
 									lane : state.pLaneSel.currentLane,
 									laneData : state.laneData,
-									laneGrid : state.laneGrid
+									laneGrid : state.laneGrid,
+									castle : gameState.eCastle
 					});
 				}
 			},
