@@ -66,7 +66,7 @@
 		
 		// init the lane data and grid
 		gameState.laneData = {
-			size : 16,
+			size : 24,
 			startY:82,
 			endY:480			
 		};
@@ -74,7 +74,7 @@
 		gameState.laneGrid = [];
 		for(var x = 0; x < 5;x++){
 			gameState.laneGrid[x] = [];
-			for(var y = 0; y < 26;y++){
+			for(var y = 0; y < 18;y++){
 				gameState.laneGrid[x][y] = {
 					val : 0,
 					unit : false

@@ -15,5 +15,5 @@
 	
     Castle.prototype.update = function(deltaTime)
     {	
-		this.label.text = this.health + "%";
+		this.label.text = this.health.toFixed(2) + "%";
     }
