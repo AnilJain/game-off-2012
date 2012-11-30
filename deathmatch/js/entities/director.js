@@ -1,7 +1,7 @@
     function Director(laneSel)
     {    
 		this.live = true;
-		this.minSpawnWaitTime = 3200;
+		this.minSpawnWaitTime = 5000;
 		this.lastSpawned = new Date().getTime();
 		
 		this.laneSel = laneSel;

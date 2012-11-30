@@ -91,7 +91,7 @@
 					if(this.laneGrid[this.lane][this.currentLaneY+this.dir].unit){
 						this.laneGrid[this.lane][this.currentLaneY+this.dir].unit.hit();
 					}else{
-						this.castle.hit(0.2);
+						this.castle.hit(0.3);
 					}
 				}
 				this.playAnimation('fight', 80);
