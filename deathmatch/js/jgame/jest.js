@@ -647,6 +647,8 @@ Object.merge = function () {
 			this.renderCanvas.addEventListener ("mousewheel", function(event){self.mouseWheel(event,self);}, false);
 			this.renderCanvas.addEventListener ("DOMMouseScroll", function(event){self.mouseWheel(event,self);}, false);
 			
+
+			
 			this.renderCanvas.width = this.width;
 			this.renderCanvas.height = this.height;
 			

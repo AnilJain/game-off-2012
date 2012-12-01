@@ -13,6 +13,8 @@
 		this.resourceManager.add("images/selection.png", 1, "selection");
 		this.resourceManager.add("images/footicon.png", 1, "footicon");
 		this.resourceManager.add("images/archicon.png", 1, "archicon");
+		this.resourceManager.add("images/healicon.png", 1, "healicon");
+		this.resourceManager.add("images/clearicon.png", 1, "clearicon");
 		this.resourceManager.add("images/footman.png", 1, "footman");
 		this.resourceManager.add("images/footman-e.png", 1, "footman-e");
 		this.resourceManager.add("images/archer.png", 1, "archer");
@@ -22,7 +24,14 @@
 		this.resourceManager.add("images/defeat.png", 1, "defeatbg");
 		this.resourceManager.add("images/victory.png", 1, "victorybg");
 		this.resourceManager.add("images/menu.png", 1, "menubg");
+		this.resourceManager.add("images/difficulty.png", 1, "diffbg");
 		this.resourceManager.add("images/start.png", 1, "startbut");
+		this.resourceManager.add("images/easy.png", 1, "easybut");
+		this.resourceManager.add("images/medium.png", 1, "mediumbut");
+		this.resourceManager.add("images/insane.png", 1, "insanebut");
+		this.resourceManager.add("images/tutorial.png", 1, "tutbg");
+		this.resourceManager.add("images/tut-but.png", 1, "tutbut");
+		this.resourceManager.add("images/back-but.png", 1, "backbut");
 		this.resourceManager.add("images/lanesel.png", 1, "laneSel");
 		jGame.prototype.load.call(this);
 	}
@@ -90,8 +99,12 @@
 		}
 		
 		// init the AI
-		gameState.director = new Director(gameState.eLaneSel);
-				
+		gameState.director = new Director(gameState.eLaneSel, 1);
+		
+		// init the unit lists
+		gameState.enemyUnits = [];
+		gameState.playerUnits = [];
+		
 		gameState.footManButton = new Button({width:50, height:50, x : 380, y : 470, resource : this.resourceManager.getResource('footicon'),
 			clicked : function(){
 				// spawn a footmam
@@ -109,11 +122,12 @@
 									lane : state.pLaneSel.currentLane,
 									laneData : state.laneData,
 									laneGrid : state.laneGrid,
-									castle : gameState.eCastle
+									castle : gameState.eCastle,
+									list : gameState.playerUnits
 					});
 				}
 			}});
-		
+				
 		gameState.ui.addItem(gameState.footManButton);
 		
 		gameState.ArcherButton = new Button({width:50, height:50, x : 440, y : 470, resource : this.resourceManager.getResource('archicon'),
@@ -132,15 +146,70 @@
 									lane : state.pLaneSel.currentLane,
 									laneData : state.laneData,
 									laneGrid : state.laneGrid,
-									castle : gameState.eCastle
+									castle : gameState.eCastle,
+									list : gameState.playerUnits
 					});
 				}
 			}});
 		
 		gameState.ui.addItem(gameState.ArcherButton);
 		
+		gameState.healButton = new Button({width:50, height:50, x : 500, y : 470, resource : this.resourceManager.getResource('healicon'),
+			clicked : function(){
+				// Heal the castle
+				var state = gameState;
+				if(gameState.resources >= 500){
+					gameState.resourceBar.removePoints(500);
+					gameState.pCastle.health += 25;
+					if(gameState.pCastle.health > 100){
+						gameState.pCastle.health = 100;
+					}
+				}
+			}});
+		
+		gameState.ui.addItem(gameState.healButton);
+		
+		gameState.clearButton = new Button({width:50, height:50, x : 560, y : 470, resource : this.resourceManager.getResource('clearicon'),
+			clicked : function(){
+				// Kill every enemy unit on the board!
+				var state = gameState;
+				if(gameState.resources >= 1500){
+					gameState.resourceBar.removePoints(1500);
+					for(var i = 0; i < gameState.enemyUnits.length; i++){
+						gameState.enemyUnits[i].live = false;
+					}
+				}
+			}});
+		
+		gameState.ui.addItem(gameState.clearButton);
+		
+		// key events for the buttons.. need to integrate key events into jest.
+		this.renderCanvas.parentNode.addEventListener("keyup", function(event){
+				var key = event.keyCode || event.which,
+					keychar = String.fromCharCode(key);
+
+				switch(keychar){
+					case "Q":
+						gameState.footManButton.clicked();
+						break;
+					case "W":
+						gameState.ArcherButton.clicked();
+						break;
+					case "E":
+						gameState.healButton.clicked();
+						break;
+					case "R":
+						gameState.clearButton.clicked();
+						break;
+				}
+		
+		}, false);
+		
+		Game.renderCanvas.onKeyDown = function(){console.log('test');}
 		this.initDefeat();
 		this.initVictory();
+		this.initDiffSelection();
+		this.initTutorial();
 		this.initMenu();
 		requestAnimFrame(function(){Game.update()});
 	}
@@ -160,7 +229,7 @@
 		
 		menuState.startButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 320, resource : this.resourceManager.getResource('startbut'),
 			clicked : function(){
-				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+				Game.switchState({name : "diffSel", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
 			},
 			hover : function(over){
 				if(over){
@@ -171,6 +240,108 @@
 		}});
 											
 		menuState.ui.addItem(menuState.startButton);
+		
+		menuState.tutButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 400, resource : this.resourceManager.getResource('tutbut'),
+			clicked : function(){
+				Game.switchState({name : "tutorial", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+											
+		menuState.ui.addItem(menuState.tutButton);
+	}
+	
+	// Initialize the tutorial  state
+	DeathMatch.prototype.initTutorial = function(){
+		Game.addState("tutorial");
+		Game.switchState({name : "tutorial"});
+
+		var tutState = {},
+			tutBg = new Background({'resource' : this.resourceManager.getResource('tutbg'), 'bgIndex' : 0}),
+			parralaxBackground = new ParralaxBackground();
+		
+		parralaxBackground.addBackground({'background' : tutBg, 'speedMultX' : 0, 'speedMultY' : 0});
+		
+		tutState.ui = new UI();
+		
+		tutState.backButton = new Button({width:150, height:60, x : 635, y : 525, resource : this.resourceManager.getResource('backbut'),
+			clicked : function(){
+				Game.switchState({name : "menu", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+		
+		tutState.ui.addItem(tutState.backButton);
+	}
+	
+	// Initialize the difficulty selection state
+	DeathMatch.prototype.initDiffSelection = function(){
+		Game.addState("diffSel");
+		Game.switchState({name : "diffSel"});
+
+		var diffState = {},
+			diffBg = new Background({'resource' : this.resourceManager.getResource('diffbg'), 'bgIndex' : 0}),
+			parralaxBackground = new ParralaxBackground();
+		
+		parralaxBackground.addBackground({'background' : diffBg, 'speedMultX' : 0, 'speedMultY' : 0});
+		
+		diffState.ui = new UI();
+		
+		diffState.easyButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 300, resource : this.resourceManager.getResource('easybut'),
+			clicked : function(){
+				Game.gameState.director.setDifficulty(1);
+				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+		
+		diffState.ui.addItem(diffState.easyButton);
+		
+		diffState.medButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 370, resource : this.resourceManager.getResource('mediumbut'),
+			clicked : function(){
+				Game.gameState.director.setDifficulty(2);
+				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+		
+		diffState.ui.addItem(diffState.medButton);
+		
+		diffState.insaneButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 440, resource : this.resourceManager.getResource('insanebut'),
+			clicked : function(){
+				Game.gameState.director.setDifficulty(3);
+				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+
+				
+		diffState.ui.addItem(diffState.insaneButton);
 	}
 	
 	// Defeat state
@@ -184,7 +355,7 @@
 			parralaxBackground.addBackground({'background' : defeatBg, 'speedMultX' : 0, 'speedMultY' : 0});
 	}
 	
-	// Defeat state
+	// Victory state
 	DeathMatch.prototype.initVictory = function(){
 		Game.addState("victory");
 		Game.switchState({name : "victory"});
@@ -209,6 +380,18 @@
 			Game.gameState.footManButton.startY = 50;
 		}else{
 			Game.gameState.footManButton.startY = 0;
+		}
+		
+		if(Game.gameState.resources >= 500){
+			Game.gameState.healButton.startY = 50;
+		}else{
+			Game.gameState.healButton.startY = 0;
+		}
+		
+		if(Game.gameState.resources >= 1500){
+			Game.gameState.clearButton.startY = 50;
+		}else{
+			Game.gameState.clearButton.startY = 0;
 		}
 
 	}
