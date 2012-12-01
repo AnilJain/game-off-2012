@@ -22,7 +22,11 @@
 		this.resourceManager.add("images/defeat.png", 1, "defeatbg");
 		this.resourceManager.add("images/victory.png", 1, "victorybg");
 		this.resourceManager.add("images/menu.png", 1, "menubg");
+		this.resourceManager.add("images/difficulty.png", 1, "diffbg");
 		this.resourceManager.add("images/start.png", 1, "startbut");
+		this.resourceManager.add("images/easy.png", 1, "easybut");
+		this.resourceManager.add("images/medium.png", 1, "mediumbut");
+		this.resourceManager.add("images/insane.png", 1, "insanebut");
 		this.resourceManager.add("images/lanesel.png", 1, "laneSel");
 		jGame.prototype.load.call(this);
 	}
@@ -90,7 +94,7 @@
 		}
 		
 		// init the AI
-		gameState.director = new Director(gameState.eLaneSel);
+		gameState.director = new Director(gameState.eLaneSel, 1);
 				
 		gameState.footManButton = new Button({width:50, height:50, x : 380, y : 470, resource : this.resourceManager.getResource('footicon'),
 			clicked : function(){
@@ -141,6 +145,7 @@
 		
 		this.initDefeat();
 		this.initVictory();
+		this.initDiffSelection();
 		this.initMenu();
 		requestAnimFrame(function(){Game.update()});
 	}
@@ -160,7 +165,7 @@
 		
 		menuState.startButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 320, resource : this.resourceManager.getResource('startbut'),
 			clicked : function(){
-				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+				Game.switchState({name : "diffSel", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
 			},
 			hover : function(over){
 				if(over){
@@ -171,6 +176,66 @@
 		}});
 											
 		menuState.ui.addItem(menuState.startButton);
+	}
+	
+	// Initialize the menu state
+	DeathMatch.prototype.initDiffSelection = function(){
+		Game.addState("diffSel");
+		Game.switchState({name : "diffSel"});
+
+		var diffState = {},
+			diffBg = new Background({'resource' : this.resourceManager.getResource('diffbg'), 'bgIndex' : 0}),
+			parralaxBackground = new ParralaxBackground();
+		
+		parralaxBackground.addBackground({'background' : diffBg, 'speedMultX' : 0, 'speedMultY' : 0});
+		
+		diffState.ui = new UI();
+		
+		diffState.easyButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 300, resource : this.resourceManager.getResource('easybut'),
+			clicked : function(){
+				Game.gameState.director.setDifficulty(1);
+				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+		
+		diffState.ui.addItem(diffState.easyButton);
+		
+		diffState.medButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 370, resource : this.resourceManager.getResource('mediumbut'),
+			clicked : function(){
+				Game.gameState.director.setDifficulty(2);
+				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+		
+		diffState.ui.addItem(diffState.medButton);
+		
+		diffState.insaneButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 440, resource : this.resourceManager.getResource('insanebut'),
+			clicked : function(){
+				Game.gameState.director.setDifficulty(3);
+				Game.switchState({id : 0, enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+
+				
+		diffState.ui.addItem(diffState.insaneButton);
 	}
 	
 	// Defeat state

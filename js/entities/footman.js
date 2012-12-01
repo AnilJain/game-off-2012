@@ -27,6 +27,8 @@
 		
 		this.currentLaneY = Math.round((this.pos.y - this.laneData.startY)/this.laneData.size);
 		
+		this.type = "footman";
+		
 		if(this.angle == 270){
 			this.dir = -1;
 		}else{
@@ -91,7 +93,7 @@
 					if(this.laneGrid[this.lane][this.currentLaneY+this.dir].unit){
 						this.laneGrid[this.lane][this.currentLaneY+this.dir].unit.hit();
 					}else{
-						this.castle.hit(0.3);
+						this.castle.hit(0.4);
 					}
 				}
 				this.playAnimation('fight', 80);

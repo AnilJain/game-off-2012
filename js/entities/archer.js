@@ -27,6 +27,8 @@
 		
 		this.currentLaneY = Math.round((this.pos.y - this.laneData.startY)/this.laneData.size);
 		
+		this.type = "archer";
+		
 		if(this.angle == 270){
 			this.dir = -3;
 		}else{
@@ -62,6 +64,9 @@
 			this.laneGrid[this.lane][laneY].unit = this;
 			
 			this.currentLaneY = laneY;
+		}else{
+			this.laneGrid[this.lane][laneY].val = this.team;
+			this.laneGrid[this.lane][laneY].unit = this;
 		}
 
 		// if something is in front then stop moving
@@ -69,7 +74,7 @@
 		var curRange = 0;
 		
 		for(var range = Math.abs(this.dir); range>0; range--){
-			if(this.angle = 270){
+			if(this.angle == 270){
 				range = -range;
 			}
 			
@@ -96,17 +101,23 @@
 			this.pos.y += this.vel.y;
 		}
 		
+		if(this.angle !== 270){
+			curRange = Math.abs(curRange);
+		}
+		
 		// do fight/walk animations and hit other units
 		if(!this.isAnimating){
 			if(!this.fighting){
 				this.playAnimation('walk', 200);
 			}else{
 				if(new Date().getTime() > this.lastHit + this.hitInterval){
-					
+					if(!this.laneGrid[this.lane][this.currentLaneY+curRange]){
+						console.log(this.currentLaneY+curRange + " : " + this.team);
+					}
 					if(this.laneGrid[this.lane][this.currentLaneY+curRange].unit){
 						this.laneGrid[this.lane][this.currentLaneY+curRange].unit.hit();
 					}else{
-						this.castle.hit(0.15);
+						this.castle.hit(0.2);
 					}
 				}
 				this.playAnimation('fight', 240);
