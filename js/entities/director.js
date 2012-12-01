@@ -1,7 +1,7 @@
     function Director(laneSel, diff)
     {    
 		this.live = true;
-		this.minResourceWaitTime = 10000/diff;
+		this.minResourceWaitTime = 8000/diff;
 		this.lastResource = new Date().getTime();
 		
 		this.resources = 0;
@@ -48,34 +48,49 @@
 				}
 			}
 		}
+		
+		// when proper time allows pass the castle instead of referencing the game state.
+		
+		// the enemy tries to heal the castle first if its low
+		if(Game.gameState.eCastle.health > 25){
 
-		if(castleDanger || enemyCount > 1){
-			while(enemyCount--){
-				// spawn footmen
-				if(this.resources > 150 && !toggleArcher){
-					this.spawnFootman();
-					toggleArcher = true;
+			// castle health isnt low but its under attack, or theres more one or more enemies unit in the lane.
+			if(castleDanger || enemyCount >= 1){
+				while(enemyCount--){
+					// spawn footmen
+					if(this.resources >= 150 && !toggleArcher){
+						this.spawnFootman();
+						toggleArcher = true;
+					}
+					
+					// spawn an archer
+					if(this.resources >= 100){
+						this.spawnArcher();
+						toggleArcher = false;
+					}
 				}
-				
-				// spawn an archer
-				if(this.resources > 100){
-					this.spawnArcher();
-					toggleArcher = false;
+			}else{
+				// no enemy in this lane spawn a few footmen
+				var units = this.diff;
+				while(units--){
+					if(this.resources >= 150 && !toggleArcher){
+						this.spawnFootman();
+						toggleArcher = true;
+					}
+					
+					// spawn an archer
+					if(this.resources >= 100){
+						this.spawnArcher();
+						toggleArcher = false;
+					}
 				}
 			}
 		}else{
-			// no enemy in this lane spawn a few footmen
-			var units = this.diff;
-			while(units--){
-				if(this.resources > 150 && !toggleArcher){
-					this.spawnFootman();
-					toggleArcher = true;
-				}
-				
-				// spawn an archer
-				if(this.resources > 100){
-					this.spawnArcher();
-					toggleArcher = false;
+			if(this.resources >= 500){
+				this.resources -= 500;
+				Game.gameState.eCastle.health += 25;
+				if(Game.gameState.eCastle.health > 100){
+					Game.gameState.eCastle.health = 100;
 				}
 			}
 		}
@@ -93,7 +108,8 @@
 					lane : this.laneSel.currentLane,
 					laneData : Game.gameState.laneData,
 					laneGrid : Game.gameState.laneGrid,
-					castle : Game.gameState.pCastle
+					castle : Game.gameState.pCastle,
+					list : Game.gameState.enemyUnits
 		});
 	}
 	
@@ -109,7 +125,8 @@
 					lane : this.laneSel.currentLane,
 					laneData : Game.gameState.laneData,
 					laneGrid : Game.gameState.laneGrid,
-					castle : Game.gameState.pCastle
+					castle : Game.gameState.pCastle,
+					list : Game.gameState.enemyUnits
 		});
 	}
 	

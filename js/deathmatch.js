@@ -13,6 +13,8 @@
 		this.resourceManager.add("images/selection.png", 1, "selection");
 		this.resourceManager.add("images/footicon.png", 1, "footicon");
 		this.resourceManager.add("images/archicon.png", 1, "archicon");
+		this.resourceManager.add("images/healicon.png", 1, "healicon");
+		this.resourceManager.add("images/clearicon.png", 1, "clearicon");
 		this.resourceManager.add("images/footman.png", 1, "footman");
 		this.resourceManager.add("images/footman-e.png", 1, "footman-e");
 		this.resourceManager.add("images/archer.png", 1, "archer");
@@ -95,7 +97,11 @@
 		
 		// init the AI
 		gameState.director = new Director(gameState.eLaneSel, 1);
-				
+		
+		// init the unit lists
+		gameState.enemyUnits = [];
+		gameState.playerUnits = [];
+		
 		gameState.footManButton = new Button({width:50, height:50, x : 380, y : 470, resource : this.resourceManager.getResource('footicon'),
 			clicked : function(){
 				// spawn a footmam
@@ -113,7 +119,8 @@
 									lane : state.pLaneSel.currentLane,
 									laneData : state.laneData,
 									laneGrid : state.laneGrid,
-									castle : gameState.eCastle
+									castle : gameState.eCastle,
+									list : gameState.playerUnits
 					});
 				}
 			}});
@@ -136,12 +143,43 @@
 									lane : state.pLaneSel.currentLane,
 									laneData : state.laneData,
 									laneGrid : state.laneGrid,
-									castle : gameState.eCastle
+									castle : gameState.eCastle,
+									list : gameState.playerUnits
 					});
 				}
 			}});
 		
 		gameState.ui.addItem(gameState.ArcherButton);
+		
+		gameState.healButton = new Button({width:50, height:50, x : 500, y : 470, resource : this.resourceManager.getResource('healicon'),
+			clicked : function(){
+				// Heal the castle
+				var state = gameState;
+				if(gameState.resources >= 500){
+					gameState.resourceBar.removePoints(500);
+					gameState.pCastle.health += 25;
+					if(gameState.pCastle.health > 100){
+						gameState.pCastle.health = 100;
+					}
+				}
+			}});
+		
+		gameState.ui.addItem(gameState.healButton);
+		
+		gameState.clearButton = new Button({width:50, height:50, x : 560, y : 470, resource : this.resourceManager.getResource('clearicon'),
+			clicked : function(){
+				// Kill every enemy unit on the board!
+				var state = gameState;
+				if(gameState.resources >= 1500){
+					gameState.resourceBar.removePoints(1500);
+					for(var i = 0; i < gameState.enemyUnits.length; i++){
+						gameState.enemyUnits[i].live = false;
+					}
+				}
+			}});
+		
+		gameState.ui.addItem(gameState.clearButton);
+		
 		
 		this.initDefeat();
 		this.initVictory();
@@ -274,6 +312,18 @@
 			Game.gameState.footManButton.startY = 50;
 		}else{
 			Game.gameState.footManButton.startY = 0;
+		}
+		
+		if(Game.gameState.resources >= 500){
+			Game.gameState.healButton.startY = 50;
+		}else{
+			Game.gameState.healButton.startY = 0;
+		}
+		
+		if(Game.gameState.resources >= 1500){
+			Game.gameState.clearButton.startY = 50;
+		}else{
+			Game.gameState.clearButton.startY = 0;
 		}
 
 	}

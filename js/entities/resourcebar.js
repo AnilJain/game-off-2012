@@ -1,7 +1,7 @@
 	function ResourceBar(options)
     {  		
 		Sprite.call(this, options);	
-		this.maxPoints = 1000;
+		this.maxPoints = 1500;
 		this.maxWidth = 400;
 		this.width = 0;
 		this.currentPoints = 0;
