@@ -29,6 +29,9 @@
 		this.resourceManager.add("images/easy.png", 1, "easybut");
 		this.resourceManager.add("images/medium.png", 1, "mediumbut");
 		this.resourceManager.add("images/insane.png", 1, "insanebut");
+		this.resourceManager.add("images/tutorial.png", 1, "tutbg");
+		this.resourceManager.add("images/tut-but.png", 1, "tutbut");
+		this.resourceManager.add("images/back-but.png", 1, "backbut");
 		this.resourceManager.add("images/lanesel.png", 1, "laneSel");
 		jGame.prototype.load.call(this);
 	}
@@ -124,7 +127,7 @@
 					});
 				}
 			}});
-		
+				
 		gameState.ui.addItem(gameState.footManButton);
 		
 		gameState.ArcherButton = new Button({width:50, height:50, x : 440, y : 470, resource : this.resourceManager.getResource('archicon'),
@@ -180,10 +183,33 @@
 		
 		gameState.ui.addItem(gameState.clearButton);
 		
+		// key events for the buttons.. need to integrate key events into jest.
+		this.renderCanvas.parentNode.addEventListener("keyup", function(event){
+				var key = event.keyCode || event.which,
+					keychar = String.fromCharCode(key);
+
+				switch(keychar){
+					case "Q":
+						gameState.footManButton.clicked();
+						break;
+					case "W":
+						gameState.ArcherButton.clicked();
+						break;
+					case "E":
+						gameState.healButton.clicked();
+						break;
+					case "R":
+						gameState.clearButton.clicked();
+						break;
+				}
 		
+		}, false);
+		
+		Game.renderCanvas.onKeyDown = function(){console.log('test');}
 		this.initDefeat();
 		this.initVictory();
 		this.initDiffSelection();
+		this.initTutorial();
 		this.initMenu();
 		requestAnimFrame(function(){Game.update()});
 	}
@@ -214,9 +240,51 @@
 		}});
 											
 		menuState.ui.addItem(menuState.startButton);
+		
+		menuState.tutButton = new Button({width:150, height:60, x : Game.width/2-146/2, y : 400, resource : this.resourceManager.getResource('tutbut'),
+			clicked : function(){
+				Game.switchState({name : "tutorial", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+											
+		menuState.ui.addItem(menuState.tutButton);
 	}
 	
-	// Initialize the menu state
+	// Initialize the tutorial  state
+	DeathMatch.prototype.initTutorial = function(){
+		Game.addState("tutorial");
+		Game.switchState({name : "tutorial"});
+
+		var tutState = {},
+			tutBg = new Background({'resource' : this.resourceManager.getResource('tutbg'), 'bgIndex' : 0}),
+			parralaxBackground = new ParralaxBackground();
+		
+		parralaxBackground.addBackground({'background' : tutBg, 'speedMultX' : 0, 'speedMultY' : 0});
+		
+		tutState.ui = new UI();
+		
+		tutState.backButton = new Button({width:150, height:60, x : 635, y : 525, resource : this.resourceManager.getResource('backbut'),
+			clicked : function(){
+				Game.switchState({name : "menu", enterTransition : {effect : 'fadeIn'}, exitTransition : {effect : 'fadeOut'}});
+			},
+			hover : function(over){
+				if(over){
+					this.startY = 60;
+				}else{
+					this.startY = 0;
+				}
+		}});
+		
+		tutState.ui.addItem(tutState.backButton);
+	}
+	
+	// Initialize the difficulty selection state
 	DeathMatch.prototype.initDiffSelection = function(){
 		Game.addState("diffSel");
 		Game.switchState({name : "diffSel"});
@@ -287,7 +355,7 @@
 			parralaxBackground.addBackground({'background' : defeatBg, 'speedMultX' : 0, 'speedMultY' : 0});
 	}
 	
-	// Defeat state
+	// Victory state
 	DeathMatch.prototype.initVictory = function(){
 		Game.addState("victory");
 		Game.switchState({name : "victory"});
